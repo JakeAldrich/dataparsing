@@ -2,7 +2,6 @@ import csv
 import json
 
 data = []
-problem_data = []
 
 current_status = ['WITHDRAWN', 'ACTIVE', 'GRADUATED']
 grade_status = ['FR', 'SO', 'JR', 'SR', '5TH']
@@ -18,10 +17,14 @@ with open('students.csv') as csvfile:
 
 class CleanData:
 
-    def __init__(self):
+    def __init__(self, data):
+        self.data = data
+        self.problem_data = []
+        self.problem_data.append(data_header)
         self.row = None
         self.col = None
         self.index = 0
+
         self.check_problems()
 
     def check_problems(self):
@@ -34,8 +37,8 @@ class CleanData:
                 if col == '' or self.check_type_specs():
                     is_error = True
             if is_error:
-                problem_data.append(row)
-                data.remove(row)
+                self.problem_data.append(row)
+                self.data.remove(row)
 
     def check_type_specs(self):
         # Return True if there is a problem with the row data
@@ -73,14 +76,20 @@ class CleanData:
                 return True
         return False
 
+    def get_data(self):
+        return self.data
 
-def sort():
+    def get_problem_data(self):
+        return self.problem_data
+
+
+def sort(data):
     temp = data.pop(0)
     data.sort(key=lambda x: x[2])
     data.insert(0, temp)
 
 
-def json_write():
+def json_write(data):
     json_data = {}
     json_data['students'] = []
     for row in data:
@@ -96,7 +105,7 @@ def json_write():
         json.dump(json_data, outfile, indent=4)
 
 
-def tab_write():
+def tab_write(data):
     with open('students.tsv', 'w') as outfile:
         for index, col in enumerate(data_header):
             if index < data_header.__len__() - 1:
@@ -114,18 +123,18 @@ def tab_write():
 
 
 # Initial Clean Using Provided Specifications
-CleanData()
+clean_data = CleanData(data)
 
 # Change Parameters For Advanced Search
 min_gpa = 3.00
 current_status = ['ACTIVE']
 
 # Second Search Using Advanced Parameters
-CleanData()
+parsed_data = CleanData(clean_data.get_data())
 
 # Sort The Latest Data
-sort()
+sort(parsed_data.get_data())
 
 # Write Data To Files
-json_write()
-tab_write()
+json_write(parsed_data.get_data())
+tab_write(parsed_data.get_data())
