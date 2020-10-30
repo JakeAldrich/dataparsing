@@ -117,7 +117,7 @@ def tab_write():
 CleanData()
 
 # Change Parameters For Advanced Search
-min_gpa = 2.00
+min_gpa = 3.00
 current_status = ['ACTIVE']
 
 # Second Search Using Advanced Parameters
